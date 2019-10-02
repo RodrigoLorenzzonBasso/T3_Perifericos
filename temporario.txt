@@ -1,0 +1,207 @@
+/* codigos temporarios */
+
+// configuracao da hora/data
+
+QTime hora_sistema = QTime::currentTime();
+
+int hora = hora_sistema.hour(); // 0 -> 23
+int minuto = hora_sistema.minute(); // 0 -> 59
+int segundo = hora_sistema.second(); // 0 -> 59
+
+
+QDate data_sistema = QDate::currentDate();
+
+int dia = data_sistema.day(); // 1 -> 31
+int dia_da_semana = data_sistema.dayOfWeek(); // 1 -> 7
+int mes = data_sistema.month(); // 1 -> 12
+int ano = data_sistema.year();
+
+char codificado[100];
+sprintf(codificado,"%02d:%02d:%02d %02d/%02d/%04d",hora,minuto,segundo,dia,mes,ano);
+TRANSMITIR ISSO
+
+//////////////////////////////////////////////////////////////////////
+
+// recepcao uart
+
+HAL_UART_Receive_IT(&huart1, $DADO , $NBYTES);
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	configura_hora();
+	HAL_UART_Receive_IT(&huart1,c.dadoRX,17);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+// int pra string
+
+#include <string> 
+
+std::string s = std::to_string(42);
+
+//////////////////////////////////////////////////////////////////////
+
+// RTC
+
+RTC_TimeTypeDef sTime;
+RTC_DateTypeDef sDate;
+
+c.sTime.Hours = 18;
+c.sTime.Minutes = 30;
+c.sTime.Seconds = 0;
+	
+c.sDate.Year = 70;
+c.sDate.Month = 01;
+c.sDate.Date = 01;
+
+HAL_RTC_SetDate(&hrtc, &c.sDate, FORMAT_BIN);
+HAL_RTC_SetTime(&hrtc, &c.sTime, FORMAT_BIN);
+
+void renderiza_RTC(void)
+{
+  HAL_RTC_GetTime(&hrtc, &c.sTime, FORMAT_BIN);
+  HAL_RTC_GetDate(&hrtc, &c.sDate, FORMAT_BIN);
+  
+  BSP_LCD_SetFont(&Font16);
+  sprintf((char*)c.vetor_print,"%02d:%02d:%02d",c.sTime.Hours,c.sTime.Minutes,c.sTime.Seconds);
+  BSP_LCD_DisplayStringAtLine(1,c.vetor_print);
+	
+  sprintf((char*)c.vetor_print,"%02d/%02d/%02d",c.sDate.Date,c.sDate.Month,c.sDate.Year);
+  BSP_LCD_DisplayStringAtLine(2,c.vetor_print);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+// codigo QT para uart
+
+void MainWindow::on_pushButton_clicked()
+{
+    serial->setPortName("COM12");
+    serial->setBaudRate(9600);
+    serial->setDataBits(static_cast<QSerialPort::DataBits>(8));
+    serial->setParity(static_cast<QSerialPort::Parity>(0));
+    serial->setStopBits(static_cast<QSerialPort::StopBits>(1));
+    serial->setFlowControl(static_cast<QSerialPort::FlowControl>(0));
+    if (serial->open(QIODevice::ReadWrite))
+    {
+        qDebug("Porta de comunicacao com o Cortex aberta");
+        //ui->label->setText("Status da Porta : ABERTA");
+        //timer->start(1000);
+        configura_hora_sistema();
+    }
+    else
+    {
+        qDebug("Nao Abriu");
+        //ui->label->setText("Status da Porta : FECHADA");
+    }
+}
+
+// setar a porta de melhor maneira
+
+QList<QSerialPortInfo> listaDePortas = QSerialPortInfo::availablePorts();
+
+QSerialPortInfo porta;
+
+for(int i = 0; i < listaDePortas.size(); i++)
+{
+    if(listaDePortas.at(i).portName() != "COM1")
+    {
+        porta = listaDePortas.at(i);
+    }
+}
+
+////////////////////
+
+void MainWindow::configura_hora_sistema()
+{  
+    QTime hora_sistema = QTime::currentTime();
+
+    int hora = hora_sistema.hour(); // 0 -> 23
+    int minuto = hora_sistema.minute(); // 0 -> 59
+    int segundo = hora_sistema.second(); // 0 -> 59
+
+
+    QDate data_sistema = QDate::currentDate();
+
+    int dia = data_sistema.day(); // 1 -> 31
+    //int dia_da_semana = data_sistema.dayOfWeek(); // 1 -> 7
+    int mes = data_sistema.month(); // 1 -> 12
+    int ano = data_sistema.year() % 100;
+
+    char str[100];
+    sprintf(str,"%02d:%02d:%02d %02d/%02d/%02d",hora,minuto,segundo,dia,mes,ano);
+
+    if(serial->isOpen())
+    {
+        serial->write(str, TAMANHO);
+    }
+}
+
+typedef struct
+{
+    char nome[30];
+    char cargo[30];
+    char matricula[8];
+    char hora_entrada[30];
+    char data_entrada[30];
+    char hora_saida[30];
+    char data_saida[30];
+} form;
+form usuario;
+
+
+//////////////////////////////////////////////////////
+
+// Codigo Cortex
+
+void configura_hora(void)
+{	
+	c.sTime.Hours = (c.dadoRX[0] - 0x30)*10 + (c.dadoRX[1] - 0x30);
+	c.sTime.Minutes = (c.dadoRX[3] - 0x30)*10 + (c.dadoRX[4] - 0x30);
+	c.sTime.Seconds = (c.dadoRX[6] - 0x30)*10 + (c.dadoRX[7] - 0x30);
+	
+	c.sDate.Date = (c.dadoRX[9] - 0x30)*10 + (c.dadoRX[10] - 0x30);
+	c.sDate.Month = (c.dadoRX[12] - 0x30)*10 + (c.dadoRX[13] - 0x30);
+	c.sDate.Year = (c.dadoRX[15] - 0x30)*10 + (c.dadoRX[16] - 0x30);
+	
+	
+	HAL_RTC_SetDate(&hrtc, &c.sDate, FORMAT_BIN);
+  HAL_RTC_SetTime(&hrtc, &c.sTime, FORMAT_BIN);
+}
+
+///////////////////////////////////////////////////////////
+
+// solucao para saber qual informacao o cortex esta recebendo
+
+fazer 2 recepcao de dados, uma recebendo apenas um dado(ou char ou inteiro)
+para saber qual tipo de dado sera enviado depois, e a outra sendo o dado real. ex
+
+
+HAL_UART_Receive_IT(&huart1, config , 2);
+estado = -1;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    se estado == -1
+	    confere_estado(config);
+    senao se estado == 0
+        configura_formulario();
+        estado = -1;
+    senao se estado == 1
+        fazoutracoisa();
+        estado = -1;
+}
+
+void confere_estado()
+{
+    // a primeira recepcao eh qual configuracao, que arma a proxima para o dado mesmo
+    se config == 0
+        HAL_UART_Receive_IT(&huart1, form , 99);
+        estado = 0;
+    se config == 1
+        HAL_UART_Receive_IT(&huart1, outro , 30);
+        estado = 1;
+}
+
+////////////////////////////////////////////////////////////////////
