@@ -86,7 +86,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void renderiza_RTC(void);
 void inicializa_vetor_uint8(uint8_t vetor[], int tam);
 void inicializa_display(void);
@@ -98,13 +98,27 @@ struct Control{
 	RTC_TimeTypeDef sTime;
 	RTC_DateTypeDef sDate;
 
-  uint8_t dadoRX[50];
+  uint8_t dadoRX[30];
 	uint8_t str[30];
 	
-	int estado;
-	uint8_t* config;
+	uint8_t config;
 	
 }c;
+
+typedef struct
+{
+	
+	char nome[30];
+	char cargo[30];
+	char matricula[10];
+	char hora_entrada[17];
+	char data_entrada[17];
+	char hora_saida[17];
+	char data_saida[17];
+
+} form;
+
+form usuario;
 
 /* USER CODE END 0 */
 
@@ -125,7 +139,7 @@ int main(void)
 	c.sDate.Date = 01;
 	
 	inicializa_vetor_uint8(c.str,30);
-	inicializa_vetor_uint8(c.dadoRX,50);
+	inicializa_vetor_uint8(c.dadoRX,30);
 
   /* USER CODE END 1 */
 
@@ -160,9 +174,6 @@ int main(void)
 
 	HAL_RTC_SetDate(&hrtc, &c.sDate, FORMAT_BIN);
 	HAL_RTC_SetTime(&hrtc, &c.sTime, FORMAT_BIN);
-
-	HAL_UART_Receive_IT(&huart1, c.dadoRX , 17);
-	c.estado = -1;
 	
   /* USER CODE END 2 */
 
@@ -174,9 +185,28 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		
-		renderiza_RTC();
+		HAL_UART_Receive(&huart1, &c.config, 1, 1000);
+		BSP_LCD_DisplayStringAtLine(9,&c.config);
 		
-		HAL_Delay(100);
+		if(c.config == 'h')
+		{
+			HAL_UART_Receive(&huart1, c.dadoRX, 17, 5000);
+			c.config = 0;
+			BSP_LCD_DisplayStringAtLine(10,c.dadoRX);
+			configura_hora();
+		}
+		else if(c.config == 'f')
+		{
+			HAL_UART_Receive(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
+			c.config = 0;
+			
+			sprintf((char*)c.str,"%s",usuario.nome);
+			BSP_LCD_DisplayStringAtLine(4,c.str);
+			
+			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
+		}
+		
+		renderiza_RTC();
 		
   }
   /* USER CODE END 3 */
@@ -248,11 +278,11 @@ void renderiza_RTC(void)
 	sprintf((char*)c.str,"%02d/%02d/%02d",c.sDate.Date,c.sDate.Month,c.sDate.Year);
   BSP_LCD_DisplayStringAtLine(2,c.str);
 }
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+/*void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	BSP_LCD_DisplayStringAtLine(8,(uint8_t*)"MEUDEUS");
 	
-	/*if(c.estado == -1)
+	if(c.estado == -1)
 	{
 		confere_estado();
 	}
@@ -266,11 +296,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		c.estado = -1;
 		HAL_UART_Receive_IT(&huart1, c.config , 2);
-	}*/
-	
+	}
+
 	configura_hora();
 	HAL_UART_Receive_IT(&huart1, c.dadoRX , 17);
-}
+}*/
 void inicializa_vetor_uint8(uint8_t vetor[], int tam)
 {
   for(int i = 0; i < tam; i++)
@@ -304,7 +334,7 @@ void configura_hora(void)
 	HAL_RTC_SetDate(&hrtc, &c.sDate, FORMAT_BIN);
   HAL_RTC_SetTime(&hrtc, &c.sTime, FORMAT_BIN);
 }
-void confere_estado(void)
+/*void confere_estado(void)
 {
 	if(c.config[0] == 'h')
 	{
@@ -320,7 +350,7 @@ void confere_estado(void)
 	sprintf((char*)c.str,"aaaa %d",c.estado);
 	BSP_LCD_DisplayStringAtLine(10,c.str);
 	
-}
+}*/
 /* USER CODE END 4 */
 
 /**
