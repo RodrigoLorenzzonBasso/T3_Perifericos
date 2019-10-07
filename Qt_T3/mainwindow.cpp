@@ -110,3 +110,122 @@ void MainWindow::on_botaoEnvia_clicked()
     ui->recebe->setText(usuario.nome);
 
 }
+
+void MainWindow::on_botaoLeDados_clicked()
+{
+    char config;
+
+    sendCommand('l');
+
+    serial->read(&config,1);
+    serial->waitForBytesWritten(1000);
+
+    if(config == 'e')
+    {
+        readUser();
+        showUserInForms();
+    }
+    else if(config == 'n')
+    {
+        showPopUp();
+    }
+    else
+    {
+        qDebug() << "Algo deu errado lendo usuario cadastrado";
+    }
+    
+
+}
+
+void MainWindow::on_botaoCadastra_clicked()
+{
+    readForms();
+
+    sendCommand('c');
+
+    writeUser();
+}
+
+bool MainWindow::readUser()
+{
+    if(serial->isOpen())
+    {
+        serial->read((char *)&usuario,sizeof(form));
+        serial->waitForBytesWritten(500);
+        return true;
+    }
+    else
+    {
+        qDebug() << "Erro ao ler o usuario, serial nao aberta";
+        return false;
+    }
+    return false;    
+}
+
+bool MainWindow::writeUser()
+{
+    if(serial->isOpen())
+    {
+        serial->write((char *)&usuario,sizeof(form));
+        serial->waitForBytesWritten(500);
+        return true;
+    }
+    else
+    {
+        qDebug() << "Erro ao escrever no usuario, serial nao aberta";
+        return false;
+    }
+    return false;  
+}
+
+void MainWindow::showUserInForms()
+{
+    ui->nome->setText(usuario.nome);
+    ui->matricula->setText(usuario.matricula);
+    ui->cargo->setText(usuario.cargo);
+    ui->hora_saida->setText(usuario.hora_saida);
+    ui->data_saida->setText(usuario.data_saida);
+    ui->hora_entrada->setText(usuario.hora_entrada);
+    ui->data_entrada->setText(usuario.data_entrada);
+
+}
+
+void MainWindow::showPopUp()
+{
+
+}
+
+void MainWindow::readForms()
+{
+    QString text = ui->nome->text();
+    strcpy(usuario.nome, text.toLatin1());
+
+    text = ui->matricula->text();
+    strcpy(usuario.matricula, text.toLatin1());
+
+    text = ui->cargo->text();
+    strcpy(usuario.cargo, text.toLatin1());
+
+    text = ui->hora_entrada->text();
+    strcpy(usuario.hora_entrada, text.toLatin1());
+
+    text = ui->data_entrada->text();
+    strcpy(usuario.data_entrada, text.toLatin1());
+
+    text = ui->hora_saida->text();
+    strcpy(usuario.hora_saida, text.toLatin1());
+
+    text = ui->data_saida->text();
+    strcpy(usuario.data_saida, text.toLatin1());
+}
+
+void MainWindow::on_botaoApagaDados_clicked()
+{
+    sendCommand('a');
+}
+
+void MainWindow::on_botaoAtiva_clicked()
+{
+    //mostra pop up de entrar ou sair
+    //faz algo
+}
