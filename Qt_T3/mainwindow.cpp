@@ -1,9 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <string.h>
+#include <QMessageBox>
 
 typedef struct
 {
+    char cadastrado;
+    char config;
     char nome[30];
     char cargo[30];
     char matricula[10];
@@ -23,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     serial = new QSerialPort(this);
     connect(serial, &QSerialPort::readyRead, this, &MainWindow::readData);
+    cadastrando = false;
 }
 
 MainWindow::~MainWindow()
@@ -34,8 +38,17 @@ MainWindow::~MainWindow()
 void MainWindow::on_BotaoConecta_clicked()
 {
     serialConnect();
-    sendCommand('h');
-    transmitSystemHour();
+
+    QTime time = QTime::currentTime();
+    QDate date = QDate::currentDate();
+
+    sprintf(usuario.hora_entrada,"%02d:%02d:%02d",time.hour(),time.minute(),time.second());
+    sprintf(usuario.data_entrada,"%02d:%02d:%02d",date.day(),date.month(),date.year()%100);
+
+    qDebug() << usuario.hora_entrada;
+
+    usuario.config = 'h';
+    writeUser();
 }
 
 void MainWindow::readData()
@@ -45,7 +58,7 @@ void MainWindow::readData()
 
 void MainWindow::serialConnect()
 {
-    serial->setPortName("COM4");
+    serial->setPortName("COM5");
     serial->setBaudRate(115200);
     serial->setDataBits(static_cast<QSerialPort::DataBits>(8));
     serial->setParity(static_cast<QSerialPort::Parity>(0));
@@ -89,43 +102,18 @@ void MainWindow::sendCommand(char com)
     }
 }
 
-
-void MainWindow::on_botaoEnvia_clicked()
-{
-    QString text = ui->envia->text();
-
-    strcpy(usuario.nome, text.toLatin1());
-
-    if(serial->isOpen())
-    {
-        sendCommand('f');
-
-        serial->write((char *)&usuario,sizeof(form));
-        serial->waitForBytesWritten(500);
-
-        serial->read((char *)&usuario,sizeof(form));
-        serial->waitForBytesWritten(500);
-    }
-
-    ui->recebe->setText(usuario.nome);
-
-}
-
 void MainWindow::on_botaoLeDados_clicked()
 {
-    char config;
+    usuario.config = 'l';
+    writeUser();
+    serial->waitForBytesWritten(2000);
+    readUser();
 
-    sendCommand('l');
-
-    serial->read(&config,1);
-    serial->waitForBytesWritten(1000);
-
-    if(config == 'e')
+    if(usuario.cadastrado == 'e')
     {
-        readUser();
         showUserInForms();
     }
-    else if(config == 'n')
+    else if(usuario.cadastrado == 'n')
     {
         showPopUp();
     }
@@ -133,17 +121,27 @@ void MainWindow::on_botaoLeDados_clicked()
     {
         qDebug() << "Algo deu errado lendo usuario cadastrado";
     }
-    
 
 }
 
 void MainWindow::on_botaoCadastra_clicked()
 {
-    readForms();
+    if(cadastrando == true)
+    {
+        readForms();
 
-    sendCommand('c');
+        sendCommand('c');
 
-    writeUser();
+        writeUser();
+
+        qDebug() << "Cadastrado";
+        cadastrando = false;
+    }
+    else
+    {
+        qDebug() << "Cadastramento nao habilitado";
+    }
+
 }
 
 bool MainWindow::readUser()
@@ -151,15 +149,14 @@ bool MainWindow::readUser()
     if(serial->isOpen())
     {
         serial->read((char *)&usuario,sizeof(form));
-        serial->waitForBytesWritten(500);
+        serial->waitForBytesWritten(5000);
         return true;
     }
     else
     {
         qDebug() << "Erro ao ler o usuario, serial nao aberta";
         return false;
-    }
-    return false;    
+    }   
 }
 
 bool MainWindow::writeUser()
@@ -167,15 +164,14 @@ bool MainWindow::writeUser()
     if(serial->isOpen())
     {
         serial->write((char *)&usuario,sizeof(form));
-        serial->waitForBytesWritten(500);
+        serial->waitForBytesWritten(5000);
         return true;
     }
     else
     {
         qDebug() << "Erro ao escrever no usuario, serial nao aberta";
         return false;
-    }
-    return false;  
+    } 
 }
 
 void MainWindow::showUserInForms()
@@ -192,6 +188,24 @@ void MainWindow::showUserInForms()
 
 void MainWindow::showPopUp()
 {
+    QMessageBox msgBox;
+
+    msgBox.setText("Usuario não cadastrado, cadastrar?");
+    QPushButton *sim = msgBox.addButton(tr("Sim"), QMessageBox::ActionRole);
+    QPushButton *nao = msgBox.addButton(tr("Nao"), QMessageBox::ActionRole);
+
+    msgBox.exec();
+
+    if(msgBox.clickedButton() == sim)
+    {
+        qDebug() << "CADASTRANDO";
+        cadastrando = 1;
+    }
+    else if(msgBox.clickedButton() == nao)
+    {
+        qDebug() << "nao no cadastrar, nada acontece";
+    }
+
 
 }
 
@@ -226,6 +240,41 @@ void MainWindow::on_botaoApagaDados_clicked()
 
 void MainWindow::on_botaoAtiva_clicked()
 {
-    //mostra pop up de entrar ou sair
-    //faz algo
+    QMessageBox msgBox;
+    QPushButton *entrar = msgBox.addButton(tr("Entrar"), QMessageBox::ActionRole);
+    QPushButton *sair = msgBox.addButton(tr("Sair"), QMessageBox::ActionRole);
+
+    msgBox.setWindowTitle("Entrando ou Saindo?");
+
+    msgBox.exec();
+
+    form temp;
+
+    QTime time = QTime::currentTime();
+    QDate date = QDate::currentDate();
+
+    char str[100];
+    sprintf(str,"%02d:%02d:%02d", time.hour(), time.minute(), time.second());
+    strcpy(temp.hora_entrada,str);
+    strcpy(temp.hora_saida,str);
+
+    sprintf(str,"%02d:%02d:%02d", date.day(), date.month(), date.year()%100);
+    strcpy(temp.data_entrada,str);
+    strcpy(temp.data_saida,str);
+
+    if(msgBox.clickedButton() == entrar)
+    {
+        qDebug() << "entrando";
+        sendCommand('o');
+        writeUser();
+
+    }
+    else if(msgBox.clickedButton() == sair)
+    {
+        qDebug() << "saindo";
+        sendCommand('u');
+        writeUser();
+    }
+
+
 }

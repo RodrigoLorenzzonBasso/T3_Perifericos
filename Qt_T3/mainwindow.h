@@ -27,7 +27,6 @@ private slots:
     void on_BotaoConecta_clicked();
     void readData();
 
-    void on_botaoEnvia_clicked();
     void on_botaoLeDados_clicked();
     void on_botaoApagaDados_clicked();
     void on_botaoCadastra_clicked();
@@ -36,6 +35,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSerialPort *serial;
+
+    bool cadastrando;
 
     void serialConnect();
     void transmitSystemHour();

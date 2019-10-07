@@ -27,7 +27,7 @@
      <string>Conecta</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="envia">
+   <widget class="QLineEdit" name="nome">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -37,20 +37,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="botaoEnvia">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>250</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Envia</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="recebe">
+   <widget class="QLineEdit" name="cargo">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -191,7 +178,7 @@
      <string>Ultima Saída</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="recebe_2">
+   <widget class="QLineEdit" name="matricula">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -201,24 +188,96 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="recebe_3">
+   <widget class="QLineEdit" name="hora_entrada">
     <property name="geometry">
      <rect>
       <x>130</x>
       <y>170</y>
-      <width>161</width>
+      <width>71</width>
       <height>20</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="recebe_4">
+   <widget class="QLineEdit" name="hora_saida">
     <property name="geometry">
      <rect>
       <x>130</x>
       <y>200</y>
-      <width>151</width>
+      <width>71</width>
       <height>20</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="data_entrada">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>170</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="data_saida">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>200</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="botaoLeDados">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>250</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Le Dados</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="botaoApagaDados">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>250</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Apaga Dados</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="botaoAtiva">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>250</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Envia/Ativa</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="botaoCadastra">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>250</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cadastra</string>
     </property>
    </widget>
   </widget>

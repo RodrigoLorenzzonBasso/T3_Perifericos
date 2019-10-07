@@ -89,7 +89,8 @@ void SystemClock_Config(void);
 
 typedef struct
 {
-	
+	char cadastrado;
+	char config;
 	char nome[30];
 	char cargo[30];
 	char matricula[10];
@@ -109,9 +110,7 @@ struct Control{
 
   uint8_t dadoRX[30];
 	uint8_t str[30];
-  
-  char msg_recebendo[30];
-  char msg_enviando[30];
+ 
 	
 	uint8_t config;
 	
@@ -149,9 +148,8 @@ int main(void)
 	c.sDate.Month = 01;
 	c.sDate.Date = 01;
 
-  sprintf(c.msg_enviando, "Enviando Dados");
-  sprintf(c.msg_recebendo, "Recebendo Dados");
-
+	usuario.config = 0;
+	usuario.cadastrado = 0;
 	
 	inicializa_vetor_uint8(c.str,30);
 	inicializa_vetor_uint8(c.dadoRX,30);
@@ -212,89 +210,59 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		
-		HAL_UART_Receive(&huart1, &c.config, 1, 1000);
-		BSP_LCD_DisplayStringAtLine(4,&c.config);
+		HAL_UART_Receive(&huart1, (uint8_t*)&usuario, sizeof(usuario), 1000);
+		BSP_LCD_DisplayStringAtLine(4,(uint8_t*)&usuario.config);
 		
-		if(c.config == 'h')
+		if(usuario.config == 'h')
 		{
-      BSP_LCD_DisplayStringAtLine(7,(uint8_t*)c.msg_recebendo);
-			HAL_UART_Receive(&huart1, c.dadoRX, 17, 5000);
-      BSP_LCD_DisplayStringAtLine(7,"");
-			c.config = 0;
+			usuario.config = 0;
 
-			BSP_LCD_DisplayStringAtLine(10,c.dadoRX);
 			configura_hora();
 		}
-		else if(c.config == 'f')
-		{
-      BSP_LCD_DisplayStringAtLine(7,(uint8_t*)c.msg_recebendo);
-			HAL_UART_Receive(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
-      BSP_LCD_DisplayStringAtLine(7,"");
-			c.config = 0;
-			
-			sprintf((char*)c.str,"%s",usuario.nome);
-			BSP_LCD_DisplayStringAtLine(11,c.str);
-			
-      BSP_LCD_DisplayStringAtLine(7,(uint8_t*)c.msg_enviando);
-			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
-      BSP_LCD_DisplayStringAtLine(7,"");
-		}
-    else if(c.config == 'l')
+    else if(usuario.config == 'l')
     {
-      c.config = 0;
-
+      usuario.config = 0;
       int verif = verifica_smart();
+			
+			if(verif == 1)
+				usuario.cadastrado = 'e';
+			else
+				usuario.cadastrado = 'n';
 
-      if(verif == 1) // existe um usuario cadastrado
-      {
-        envia_comando('e');
-        BSP_LCD_DisplayStringAtLine(8,"existe usuario");
-        
-        le_cartao();
-        BSP_LCD_DisplayStringAtLine(7,(uint8_t*)c.msg_enviando);
-        HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
-        BSP_LCD_DisplayStringAtLine(7,"");
-      }
-      else // nao existe
-      {
-        envia_comando('n');
-        BSP_LCD_DisplayStringAtLine(8,"nao existe usuario");
-      }
+			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
+			BSP_LCD_DisplayStringAtLine(8,(uint8_t*)"transmitiu");
     }
-    else if(c.config == 'c')
+    else if(usuario.config == 'c')
     {
-      c.config = 0;
-
-      BSP_LCD_DisplayStringAtLine(7,(uint8_t*)c.msg_recebendo);
-			HAL_UART_Receive(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
-      BSP_LCD_DisplayStringAtLine(7,"");
+      usuario.config = 0;
 
       escreve_cartao();
-      BSP_LCD_DisplayStringAtLine(13,"Usuario Cadastrado # pode ter dado ruim");
+
+      BSP_LCD_DisplayStringAtLine(13,(uint8_t*)"Usuario Cadastrado # pode ter dado ruim");
     }
-    else if(c.config == 'o')
+    else if(usuario.config == 'o')
     {
-      c.config = 0;
+      usuario.config = 0;
 
       grava_entrando();
 
-      BSP_LCD_DisplayStringAtLine(16,"Entrada Liberada");
+      BSP_LCD_DisplayStringAtLine(16,(uint8_t*)"Entrada Liberada");
 
     }
     else if(c.config == 'u')
     {
-      c.config = 0;
+      usuario.config = 0;
 
       grava_saindo();
 
-      BSP_LCD_DisplayStringAtLine(16,"Saida Liberada");
+      BSP_LCD_DisplayStringAtLine(16,(uint8_t*)"Saida Liberada");
     }
     else if(c.config == 'a')
     {
-      c.config = 0;
+      usuario.config = 0;
 
       inicializa_cartao();
-      BSP_LCD_DisplayStringAtLine(16,"dados apagados");
+      BSP_LCD_DisplayStringAtLine(16,(uint8_t*)"dados apagados");
     }
 		
 		renderiza_RTC();
@@ -393,13 +361,14 @@ void inicializa_display(void)
 
 void configura_hora(void)
 {	
-	c.sTime.Hours = (c.dadoRX[0] - 0x30)*10 + (c.dadoRX[1] - 0x30);
-	c.sTime.Minutes = (c.dadoRX[3] - 0x30)*10 + (c.dadoRX[4] - 0x30);
-	c.sTime.Seconds = (c.dadoRX[6] - 0x30)*10 + (c.dadoRX[7] - 0x30);
+	c.sTime.Hours = (usuario.hora_entrada[0] - 0x30)*10 + (usuario.hora_entrada[1] - 0x30);
+	c.sTime.Minutes = (usuario.hora_entrada[3] - 0x30)*10 + (usuario.hora_entrada[4] - 0x30);
+	c.sTime.Seconds = (usuario.hora_entrada[6] - 0x30)*10 + (usuario.hora_entrada[7] - 0x30);
 	
-	c.sDate.Date = (c.dadoRX[9] - 0x30)*10 + (c.dadoRX[10] - 0x30);
-	c.sDate.Month = (c.dadoRX[12] - 0x30)*10 + (c.dadoRX[13] - 0x30);
-	c.sDate.Year = (c.dadoRX[15] - 0x30)*10 + (c.dadoRX[16] - 0x30);
+	c.sDate.Date = (usuario.data_entrada[0] - 0x30)*10 + (usuario.data_entrada[1] - 0x30);
+	c.sDate.Month = (usuario.data_entrada[3] - 0x30)*10 + (usuario.data_entrada[4] - 0x30);
+	c.sDate.Year = (usuario.data_entrada[6] - 0x30)*10 + (usuario.data_entrada[7] - 0x30);
+	
 	
 	HAL_RTC_SetDate(&hrtc, &c.sDate, FORMAT_BIN);
   HAL_RTC_SetTime(&hrtc, &c.sTime, FORMAT_BIN);
@@ -407,22 +376,27 @@ void configura_hora(void)
 
 int verifica_smart(void)
 {
-  char dado = "";
-  HAL_I2C_Mem_Read(&hi2c3,0xa1,0,I2C_MEMADD_SIZE_8BIT,&dado,1,500);
+  char dado = 'x';
+  HAL_I2C_Mem_Read(&hi2c3,0xa1,0,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&dado,1,500);
 
-  if(dado = 'c')
+  if(dado == 'c')
   {
     return 1;
   }
-  else
+  else if(dado == 'x')
   {
+		BSP_LCD_DisplayStringAtLine(15,(uint8_t*)"tem um x");
     return 0;
   }
+	else
+	{
+		return 0;
+	}
 }
 
 void envia_comando(char com)
 {
-  HAL_UART_Transmit(&huart1, &com, 1, 500);
+  HAL_UART_Transmit(&huart1, (uint8_t*)&com, 1, 1000);
 }
 
 void le_cartao(void)
@@ -432,24 +406,28 @@ void le_cartao(void)
 
 void escreve_cartao(void)
 {
-  uint8_t dado[138] = (uint8_t*)&usuario;
-  int endereco = 1;
+  char dado[sizeof(usuario)];
+	strcpy(dado,(char*)&usuario);
+  int endereco = 0;
 
   for(int i = 0; i<strlen(dado); i++)
   {
-    endereco = i+1;
-    HAL_I2C_Mem_Write(&hi2c3,0xa0,endereco,I2C_MEMADD_SIZE_8BIT,dado[i],1,500);
-    HAL_Delay(2);
+    endereco = i;
+    HAL_I2C_Mem_Write(&hi2c3,0xa0,endereco,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&dado[i],1,500);
+    HAL_Delay(10);
   }
 
 }
 
 void grava_entrando(void)
 {
+	le_cartao();
+	
   form temp;
   HAL_UART_Receive(&huart1,(uint8_t*)&temp,sizeof(temp),5000);
 
   strcpy(usuario.hora_entrada,temp.hora_entrada);
+	strcpy(usuario.data_entrada,temp.data_entrada);
 
   escreve_cartao();
 
@@ -457,10 +435,13 @@ void grava_entrando(void)
 
 void grava_saindo(void)
 {
+	le_cartao();
+	
   form temp;
   HAL_UART_Receive(&huart1,(uint8_t*)&temp,sizeof(temp),5000);
 
   strcpy(usuario.hora_saida,temp.hora_saida);
+	strcpy(usuario.data_saida,temp.data_saida);
 
   escreve_cartao();
 
@@ -469,7 +450,8 @@ void grava_saindo(void)
 void inicializa_cartao(void)
 {
   char dado = 'x';
-  HAL_I2C_Mem_Write(&hi2c3,0xa0,0,I2C_MEMADD_SIZE_8BIT,&dado,1,500);
+  HAL_I2C_Mem_Write(&hi2c3,0xa0,0,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&dado,1,500);
+	HAL_Delay(10);
 }
 
 /* USER CODE END 4 */
