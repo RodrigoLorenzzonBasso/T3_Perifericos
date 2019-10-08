@@ -222,15 +222,10 @@ int main(void)
     else if(usuario.config == 'l')
     {
       usuario.config = 0;
-      int verif = verifica_smart();
 			
-			if(verif == 1)
-				usuario.cadastrado = 'e';
-			else
-				usuario.cadastrado = 'n';
+			le_cartao();
 
-			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(usuario), 5000);
-			BSP_LCD_DisplayStringAtLine(8,(uint8_t*)"transmitiu");
+			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(form), 5000);
     }
     else if(usuario.config == 'c')
     {
@@ -247,7 +242,6 @@ int main(void)
       grava_entrando();
 
       BSP_LCD_DisplayStringAtLine(16,(uint8_t*)"Entrada Liberada");
-
     }
     else if(c.config == 'u')
     {
@@ -262,6 +256,7 @@ int main(void)
       usuario.config = 0;
 
       inicializa_cartao();
+			
       BSP_LCD_DisplayStringAtLine(16,(uint8_t*)"dados apagados");
     }
 		
@@ -373,47 +368,21 @@ void configura_hora(void)
 	HAL_RTC_SetDate(&hrtc, &c.sDate, FORMAT_BIN);
   HAL_RTC_SetTime(&hrtc, &c.sTime, FORMAT_BIN);
 }
-
-int verifica_smart(void)
-{
-  char dado = 'x';
-  HAL_I2C_Mem_Read(&hi2c3,0xa1,0,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&dado,1,500);
-
-  if(dado == 'c')
-  {
-    return 1;
-  }
-  else if(dado == 'x')
-  {
-		BSP_LCD_DisplayStringAtLine(15,(uint8_t*)"tem um x");
-    return 0;
-  }
-	else
-	{
-		return 0;
-	}
-}
-
-void envia_comando(char com)
-{
-  HAL_UART_Transmit(&huart1, (uint8_t*)&com, 1, 1000);
-}
-
 void le_cartao(void)
 {
-  HAL_I2C_Mem_Read(&hi2c3,0xa1,1,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&usuario,sizeof(usuario),5000);
+  HAL_I2C_Mem_Read(&hi2c3,0xa1,0,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&usuario,sizeof(usuario),1000);
 }
 
 void escreve_cartao(void)
 {
-  char dado[sizeof(usuario)];
-	strcpy(dado,(char*)&usuario);
+  uint8_t dado[sizeof(usuario)];
+	memcpy(dado,(uint8_t*)&usuario,sizeof(form));
   int endereco = 0;
 
-  for(int i = 0; i<strlen(dado); i++)
+  for(int i = 0; i<sizeof(dado); i++)
   {
     endereco = i;
-    HAL_I2C_Mem_Write(&hi2c3,0xa0,endereco,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&dado[i],1,500);
+    HAL_I2C_Mem_Write(&hi2c3,0xa0,endereco,I2C_MEMADD_SIZE_8BIT,&dado[i],1,500);
     HAL_Delay(10);
   }
 
@@ -430,7 +399,6 @@ void grava_entrando(void)
 	strcpy(usuario.data_entrada,temp.data_entrada);
 
   escreve_cartao();
-
 }
 
 void grava_saindo(void)

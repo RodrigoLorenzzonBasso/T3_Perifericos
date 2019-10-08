@@ -45,15 +45,8 @@ void MainWindow::on_BotaoConecta_clicked()
     sprintf(usuario.hora_entrada,"%02d:%02d:%02d",time.hour(),time.minute(),time.second());
     sprintf(usuario.data_entrada,"%02d:%02d:%02d",date.day(),date.month(),date.year()%100);
 
-    qDebug() << usuario.hora_entrada;
-
     usuario.config = 'h';
     writeUser();
-}
-
-void MainWindow::readData()
-{
-
 }
 
 void MainWindow::serialConnect()
@@ -75,51 +68,24 @@ void MainWindow::serialConnect()
     }
 }
 
-void MainWindow::transmitSystemHour()
+void MainWindow::readData()
 {
-    QTime time = QTime::currentTime();
-    QDate date = QDate::currentDate();
 
-    char str[100];
-    sprintf(str,"%02d:%02d:%02d %02d/%02d/%02d", time.hour(), time.minute(), time.second(),
-                                                 date.day(), date.month(), date.year()%100);
-
-    qDebug() << str;
-
-    if(serial->isOpen())
-    {
-        serial->write(str,strlen(str));
-        serial->waitForBytesWritten(500);
-    }
-}
-
-void MainWindow::sendCommand(char com)
-{
-    if(serial->isOpen())
-    {
-        serial->write(&com,1);
-        serial->waitForBytesWritten(500);
-    }
 }
 
 void MainWindow::on_botaoLeDados_clicked()
 {
     usuario.config = 'l';
     writeUser();
-    serial->waitForBytesWritten(2000);
     readUser();
 
-    if(usuario.cadastrado == 'e')
+    if(usuario.cadastrado == 'c')
     {
         showUserInForms();
     }
-    else if(usuario.cadastrado == 'n')
-    {
-        showPopUp();
-    }
     else
     {
-        qDebug() << "Algo deu errado lendo usuario cadastrado";
+        showPopUp();
     }
 
 }
@@ -129,9 +95,7 @@ void MainWindow::on_botaoCadastra_clicked()
     if(cadastrando == true)
     {
         readForms();
-
-        sendCommand('c');
-
+        usuario.config = 'c';
         writeUser();
 
         qDebug() << "Cadastrado";
@@ -146,32 +110,16 @@ void MainWindow::on_botaoCadastra_clicked()
 
 bool MainWindow::readUser()
 {
-    if(serial->isOpen())
+    if(serial->bytesAvailable()>=sizeof(form))
     {
-        serial->read((char *)&usuario,sizeof(form));
-        serial->waitForBytesWritten(5000);
-        return true;
+        serial->read((char*)&usuario,sizeof(form));
     }
-    else
-    {
-        qDebug() << "Erro ao ler o usuario, serial nao aberta";
-        return false;
-    }   
 }
 
 bool MainWindow::writeUser()
 {
-    if(serial->isOpen())
-    {
-        serial->write((char *)&usuario,sizeof(form));
-        serial->waitForBytesWritten(5000);
-        return true;
-    }
-    else
-    {
-        qDebug() << "Erro ao escrever no usuario, serial nao aberta";
-        return false;
-    } 
+    serial->write((char*)&usuario,sizeof(form));
+    serial->waitForBytesWritten(500);
 }
 
 void MainWindow::showUserInForms()
@@ -206,7 +154,6 @@ void MainWindow::showPopUp()
         qDebug() << "nao no cadastrar, nada acontece";
     }
 
-
 }
 
 void MainWindow::readForms()
@@ -235,7 +182,8 @@ void MainWindow::readForms()
 
 void MainWindow::on_botaoApagaDados_clicked()
 {
-    sendCommand('a');
+    usuario.config = 'a';
+    writeUser();
 }
 
 void MainWindow::on_botaoAtiva_clicked()
@@ -248,33 +196,30 @@ void MainWindow::on_botaoAtiva_clicked()
 
     msgBox.exec();
 
-    form temp;
-
     QTime time = QTime::currentTime();
     QDate date = QDate::currentDate();
 
     char str[100];
     sprintf(str,"%02d:%02d:%02d", time.hour(), time.minute(), time.second());
-    strcpy(temp.hora_entrada,str);
-    strcpy(temp.hora_saida,str);
+    strcpy(usuario.hora_entrada,str);
+    strcpy(usuario.hora_saida,str);
 
     sprintf(str,"%02d:%02d:%02d", date.day(), date.month(), date.year()%100);
-    strcpy(temp.data_entrada,str);
-    strcpy(temp.data_saida,str);
+    strcpy(usuario.data_entrada,str);
+    strcpy(usuario.data_saida,str);
 
     if(msgBox.clickedButton() == entrar)
     {
         qDebug() << "entrando";
-        sendCommand('o');
+        usuario.config = 'o';
         writeUser();
 
     }
     else if(msgBox.clickedButton() == sair)
     {
         qDebug() << "saindo";
-        sendCommand('u');
+        usuario.config = 'u';
         writeUser();
     }
-
 
 }

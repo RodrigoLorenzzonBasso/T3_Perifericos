@@ -44,6 +44,7 @@ public:
     QPushButton *botaoApagaDados;
     QPushButton *botaoAtiva;
     QPushButton *botaoCadastra;
+    QLabel *label_7;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -132,6 +133,13 @@ public:
         botaoCadastra = new QPushButton(centralWidget);
         botaoCadastra->setObjectName(QStringLiteral("botaoCadastra"));
         botaoCadastra->setGeometry(QRect(390, 250, 75, 23));
+        label_7 = new QLabel(centralWidget);
+        label_7->setObjectName(QStringLiteral("label_7"));
+        label_7->setGeometry(QRect(410, 40, 51, 41));
+        QFont font3;
+        font3.setFamily(QStringLiteral("Comic Sans MS"));
+        font3.setPointSize(14);
+        label_7->setFont(font3);
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -163,6 +171,7 @@ public:
         botaoApagaDados->setText(QApplication::translate("MainWindow", "Apaga Dados", nullptr));
         botaoAtiva->setText(QApplication::translate("MainWindow", "Envia/Ativa", nullptr));
         botaoCadastra->setText(QApplication::translate("MainWindow", "Cadastra", nullptr));
+        label_7->setText(QApplication::translate("MainWindow", "Foto", nullptr));
     } // retranslateUi
 
 };
