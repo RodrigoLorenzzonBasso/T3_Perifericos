@@ -91,13 +91,13 @@ typedef struct
 {
 	char cadastrado;
 	char config[2];
-	char nome[30];
-	char cargo[30];
+	char nome[20];
+	char cargo[20];
 	char matricula[10];
-	char hora_entrada[17];
-	char data_entrada[17];
-	char hora_saida[17];
-	char data_saida[17];
+	char hora_entrada[9];
+	char data_entrada[9];
+	char hora_saida[9];
+	char data_saida[9];
 
 } form;
 
@@ -136,7 +136,7 @@ void inicializa_cartao(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+   uint8_t x;
 	c.sTime.Hours = 18;
 	c.sTime.Minutes = 30;
 	c.sTime.Seconds = 0;
@@ -201,6 +201,18 @@ int main(void)
   //  c = cadastra usuario
   //  o = usuario entrando
   //  u = usuario saindo
+	
+	/*char aa = 'T';
+	char x;
+	
+	HAL_I2C_Mem_Write(&hi2c3,0xa0,0,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&aa,1,1000);
+	HAL_Delay(100);
+	
+	HAL_I2C_Mem_Read(&hi2c3,0xa1,0,I2C_MEMADD_SIZE_8BIT,(uint8_t*)&x,1,1000);
+	
+	sprintf((char*)c.str,"%c",x);
+	BSP_LCD_DisplayStringAtLine(6,(uint8_t*)&x);*/
+	
 
   while (1)
   {
@@ -208,9 +220,30 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		
-		HAL_UART_Receive(&huart1, (uint8_t*)&usuario, sizeof(usuario), 1000);
-		sprintf((uint8_t)c.str,"%s",usuario.config);
-		BSP_LCD_DisplayStringAtLine(4,(uint8_t*)str);
+		strcpy(usuario.nome,"nada");
+		strcpy(usuario.cargo,"nada");
+		usuario.cadastrado = 'n';
+		
+		//HAL_UART_Receive(&huart1, (uint8_t*)&usuario, sizeof(usuario), 1000);
+		HAL_UART_Receive(&huart1, (uint8_t*)&x, 1, 1000);
+		
+		 if(x == 'l')
+    {
+      usuario.config[0] = 0;
+			
+			//le_cartao();
+			
+			strcpy(usuario.nome,"rodrigo");
+			strcpy(usuario.matricula,"alguma");
+			strcpy(usuario.cargo,"asd");
+			
+			BSP_LCD_DisplayStringAtLine(7,(uint8_t*)"UHDSUSADF");
+			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(form), 500);
+			BSP_LCD_DisplayStringAtLine(8,(uint8_t*)"UHDSUSADF");
+    }
+		
+		sprintf((char*)c.str,"%s",usuario.config);
+		BSP_LCD_DisplayStringAtLine(4,c.str);
 		
 		if(usuario.config[0] == 'h')
 		{
@@ -218,14 +251,16 @@ int main(void)
 
 			configura_hora();
 		}
-    else if(usuario.config[0] == 'l')
+    /*else if(usuario.config[0] == 'l')
     {
       usuario.config[0] = 0;
 			
 			le_cartao();
 
-			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(form), 5000);
-    }
+			BSP_LCD_DisplayStringAtLine(7,(uint8_t*)"UHDSUSADF");
+			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(form), 500);
+			BSP_LCD_DisplayStringAtLine(8,(uint8_t*)"UHDSUSADF");
+    }*/
     else if(usuario.config[0] == 'c')
     {
       usuario.config[0] = 0;

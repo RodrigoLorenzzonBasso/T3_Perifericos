@@ -3,9 +3,9 @@
 <title>Static Call Graph - [DisplayLCD\DisplayLCD.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image DisplayLCD\DisplayLCD.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed Oct 09 17:04:23 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed Oct 09 18:50:54 2019
 <BR><P>
-<H3>Maximum Stack Usage =        448 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        360 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; grava_saindo &rArr; escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 <P>
@@ -495,7 +495,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[10f]"></a>strcpy</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, strcpy.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grava_saindo
+<BR><BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grava_saindo
 <LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grava_entrando
 </UL>
 
@@ -562,7 +563,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_GetFont
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_DisplayStringAt
 </UL>
-<BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
+<BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -626,7 +627,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[90]"></a>BSP_LCD_SetFont</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f429i_discovery_lcd.o(i.BSP_LCD_SetFont))
-<BR><BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
+<BR><BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
 <LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inicializa_display
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_Init
 </UL>
@@ -1052,7 +1053,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RTC_Bcd2ToByte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
+<BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
 </UL>
 
 <P><STRONG><a name="[c7]"></a>HAL_RTC_GetTime</STRONG> (Thumb, 82 bytes, Stack size 8 bytes, stm32f4xx_hal_rtc.o(i.HAL_RTC_GetTime))
@@ -1060,7 +1061,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RTC_Bcd2ToByte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
+<BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
 </UL>
 
 <P><STRONG><a name="[c8]"></a>HAL_RTC_Init</STRONG> (Thumb, 166 bytes, Stack size 16 bytes, stm32f4xx_hal_rtc.o(i.HAL_RTC_Init))
@@ -1540,10 +1541,11 @@ Global Symbols
 
 <P><STRONG><a name="[130]"></a>__1sprintf$6</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf6.o(i.__0sprintf$6), UNUSED)
 
-<P><STRONG><a name="[119]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf6.o(i.__0sprintf$6))
+<P><STRONG><a name="[118]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf6.o(i.__0sprintf$6))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2sprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
+<BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
+<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[131]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
@@ -1561,8 +1563,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[10c]"></a>escreve_cartao</STRONG> (Thumb, 60 bytes, Stack size 176 bytes, main.o(i.escreve_cartao))
-<BR><BR>[Stack]<UL><LI>Max Depth = 304<LI>Call Chain = escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
+<P><STRONG><a name="[10c]"></a>escreve_cartao</STRONG> (Thumb, 60 bytes, Stack size 128 bytes, main.o(i.escreve_cartao))
+<BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_Mem_Write
 <LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
@@ -1573,8 +1575,8 @@ Global Symbols
 <LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grava_entrando
 </UL>
 
-<P><STRONG><a name="[10d]"></a>grava_entrando</STRONG> (Thumb, 50 bytes, Stack size 144 bytes, main.o(i.grava_entrando))
-<BR><BR>[Stack]<UL><LI>Max Depth = 448<LI>Call Chain = grava_entrando &rArr; escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
+<P><STRONG><a name="[10d]"></a>grava_entrando</STRONG> (Thumb, 52 bytes, Stack size 96 bytes, main.o(i.grava_entrando))
+<BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = grava_entrando &rArr; escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;le_cartao
@@ -1584,8 +1586,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[110]"></a>grava_saindo</STRONG> (Thumb, 52 bytes, Stack size 144 bytes, main.o(i.grava_saindo))
-<BR><BR>[Stack]<UL><LI>Max Depth = 448<LI>Call Chain = grava_saindo &rArr; escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
+<P><STRONG><a name="[110]"></a>grava_saindo</STRONG> (Thumb, 50 bytes, Stack size 96 bytes, main.o(i.grava_saindo))
+<BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = grava_saindo &rArr; escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;le_cartao
@@ -1666,13 +1668,12 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_Mem_Read
 </UL>
-<BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grava_saindo
+<BR>[Called By]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grava_saindo
 <LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grava_entrando
 </UL>
 
-<P><STRONG><a name="[64]"></a>main</STRONG> (Thumb, 248 bytes, Stack size 0 bytes, main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 448<LI>Call Chain = main &rArr; grava_saindo &rArr; escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
+<P><STRONG><a name="[64]"></a>main</STRONG> (Thumb, 328 bytes, Stack size 8 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = main &rArr; grava_saindo &rArr; escreve_cartao &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART1_UART_Init
 <LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_SPI5_Init
@@ -1687,8 +1688,7 @@ Global Symbols
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_SetTime
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_SetDate
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
-<LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
-<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;le_cartao
+<LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;renderiza_RTC
 <LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inicializa_vetor_uint8
 <LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inicializa_display
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inicializa_cartao
@@ -1698,17 +1698,19 @@ Global Symbols
 <LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;configura_hora
 <LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemClock_Config
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_DisplayStringAtLine
+<LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcpy
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
 </UL>
-<P><STRONG><a name="[118]"></a>renderiza_RTC</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, main.o(i.renderiza_RTC))
+<P><STRONG><a name="[119]"></a>renderiza_RTC</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, main.o(i.renderiza_RTC))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = renderiza_RTC &rArr; BSP_LCD_DisplayStringAtLine &rArr; BSP_LCD_DisplayStringAt &rArr; BSP_LCD_DisplayChar &rArr; DrawChar &rArr; BSP_LCD_DrawPixel
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetTime
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetDate
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_SetFont
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_DisplayStringAtLine
-<LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>

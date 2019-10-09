@@ -6,14 +6,14 @@
 typedef struct
 {
     char cadastrado;
-    char config;
-    char nome[30];
-    char cargo[30];
+    char config[2];
+    char nome[20];
+    char cargo[20];
     char matricula[10];
-    char hora_entrada[17];
-    char data_entrada[17];
-    char hora_saida[17];
-    char data_saida[17];
+    char hora_entrada[9];
+    char data_entrada[9];
+    char hora_saida[9];
+    char data_saida[9];
 } form;
 
 form usuario;
@@ -45,14 +45,14 @@ void MainWindow::on_BotaoConecta_clicked()
     sprintf(usuario.hora_entrada,"%02d:%02d:%02d",time.hour(),time.minute(),time.second());
     sprintf(usuario.data_entrada,"%02d:%02d:%02d",date.day(),date.month(),date.year()%100);
 
-    usuario.config = 'h';
+    usuario.config[0] = 'h';
     writeUser();
 }
 
 void MainWindow::serialConnect()
 {
-    serial->setPortName("COM8");
-    serial->setBaudRate(115200);
+    serial->setPortName("COM11");
+    serial->setBaudRate(9600);
     serial->setDataBits(static_cast<QSerialPort::DataBits>(8));
     serial->setParity(static_cast<QSerialPort::Parity>(0));
     serial->setStopBits(static_cast<QSerialPort::StopBits>(1));
@@ -70,16 +70,42 @@ void MainWindow::serialConnect()
 
 void MainWindow::readData()
 {
+    qDebug() << "ReadData";
+
+    if(serial->bytesAvailable()>=sizeof(form))
+    {
+        //readUser();
+        usuario.cadastrado = 'n';
+        qDebug() << "receive" <<   serial->read((char*)&usuario,sizeof(form));
+
+        qDebug() << usuario.cadastrado;
+
+        if(usuario.cadastrado == 'c')
+        {
+            qDebug() << usuario.nome;
+            qDebug() << usuario.cargo;
+            qDebug() << usuario.matricula;
+
+            showUserInForms();
+        }
+        else
+        {
+            showPopUp();
+        }
+    }
 
 }
 
 void MainWindow::on_botaoLeDados_clicked()
 {
-    usuario.config = 'l';
+    usuario.config[0] = 'l';
     writeUser();
-    readUser();
 
-    qDebug() << usuario.nome;
+    usuario.cadastrado = 'n';
+
+    //readUser();
+
+    /*qDebug() << usuario.nome;
     qDebug() << usuario.cargo;
     qDebug() << usuario.matricula;
     qDebug() << usuario.cadastrado;
@@ -91,7 +117,7 @@ void MainWindow::on_botaoLeDados_clicked()
     else
     {
         showPopUp();
-    }
+    }*/
 
 }
 
@@ -100,7 +126,7 @@ void MainWindow::on_botaoCadastra_clicked()
     if(cadastrando == true)
     {
         readForms();
-        usuario.config = 'c';
+        usuario.config[0] = 'c';
         usuario.cadastrado = 'c';
         writeUser();
 
@@ -200,7 +226,8 @@ void MainWindow::readForms()
 
 void MainWindow::on_botaoApagaDados_clicked()
 {
-    usuario.config = 'a';
+    usuario.config[0] = 'a';
+    eraseForms();
     writeUser();
 }
 
@@ -229,7 +256,7 @@ void MainWindow::on_botaoAtiva_clicked()
         strcpy(usuario.data_entrada,str);
 
         qDebug() << "entrando";
-        usuario.config = 'o';
+        usuario.config[0] = 'o';
         writeUser();
 
     }
@@ -241,7 +268,7 @@ void MainWindow::on_botaoAtiva_clicked()
         strcpy(usuario.data_saida,str);
 
         qDebug() << "saindo";
-        usuario.config = 'u';
+        usuario.config[0] = 'u';
         writeUser();
     }
 
