@@ -51,7 +51,7 @@ void MainWindow::on_BotaoConecta_clicked()
 
 void MainWindow::serialConnect()
 {
-    serial->setPortName("COM5");
+    serial->setPortName("COM8");
     serial->setBaudRate(115200);
     serial->setDataBits(static_cast<QSerialPort::DataBits>(8));
     serial->setParity(static_cast<QSerialPort::Parity>(0));
@@ -79,6 +79,11 @@ void MainWindow::on_botaoLeDados_clicked()
     writeUser();
     readUser();
 
+    qDebug() << usuario.nome;
+    qDebug() << usuario.cargo;
+    qDebug() << usuario.matricula;
+    qDebug() << usuario.cadastrado;
+
     if(usuario.cadastrado == 'c')
     {
         showUserInForms();
@@ -96,8 +101,10 @@ void MainWindow::on_botaoCadastra_clicked()
     {
         readForms();
         usuario.config = 'c';
+        usuario.cadastrado = 'c';
         writeUser();
 
+        eraseForms();
         qDebug() << "Cadastrado";
         cadastrando = false;
     }
@@ -156,6 +163,17 @@ void MainWindow::showPopUp()
 
 }
 
+void MainWindow::eraseForms()
+{
+    ui->nome->setText("");
+    ui->cargo->setText("");
+    ui->matricula->setText("");
+    ui->hora_entrada->setText("");
+    ui->hora_saida->setText("");
+    ui->data_entrada->setText("");
+    ui->data_saida->setText("");
+}
+
 void MainWindow::readForms()
 {
     QString text = ui->nome->text();
@@ -196,20 +214,20 @@ void MainWindow::on_botaoAtiva_clicked()
 
     msgBox.exec();
 
+    eraseForms();
+
     QTime time = QTime::currentTime();
     QDate date = QDate::currentDate();
 
     char str[100];
-    sprintf(str,"%02d:%02d:%02d", time.hour(), time.minute(), time.second());
-    strcpy(usuario.hora_entrada,str);
-    strcpy(usuario.hora_saida,str);
-
-    sprintf(str,"%02d:%02d:%02d", date.day(), date.month(), date.year()%100);
-    strcpy(usuario.data_entrada,str);
-    strcpy(usuario.data_saida,str);
 
     if(msgBox.clickedButton() == entrar)
     {
+        sprintf(str,"%02d:%02d:%02d", time.hour(), time.minute(), time.second());
+        strcpy(usuario.hora_entrada,str);
+        sprintf(str,"%02d/%02d/%02d", date.day(), date.month(), date.year()%100);
+        strcpy(usuario.data_entrada,str);
+
         qDebug() << "entrando";
         usuario.config = 'o';
         writeUser();
@@ -217,6 +235,11 @@ void MainWindow::on_botaoAtiva_clicked()
     }
     else if(msgBox.clickedButton() == sair)
     {
+        sprintf(str,"%02d:%02d:%02d", time.hour(), time.minute(), time.second());
+        strcpy(usuario.hora_saida,str);
+        sprintf(str,"%02d/%02d/%02d", date.day(), date.month(), date.year()%100);
+        strcpy(usuario.data_saida,str);
+
         qDebug() << "saindo";
         usuario.config = 'u';
         writeUser();

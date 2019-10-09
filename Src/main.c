@@ -90,7 +90,7 @@ void SystemClock_Config(void);
 typedef struct
 {
 	char cadastrado;
-	char config;
+	char config[2];
 	char nome[30];
 	char cargo[30];
 	char matricula[10];
@@ -110,9 +110,6 @@ struct Control{
 
   uint8_t dadoRX[30];
 	uint8_t str[30];
- 
-	
-	uint8_t config;
 	
 }c;
 
@@ -148,7 +145,8 @@ int main(void)
 	c.sDate.Month = 01;
 	c.sDate.Date = 01;
 
-	usuario.config = 0;
+	usuario.config[0] = 0;
+	usuario.config[1] = 0;
 	usuario.cadastrado = 0;
 	
 	inicializa_vetor_uint8(c.str,30);
@@ -211,49 +209,48 @@ int main(void)
     /* USER CODE BEGIN 3 */
 		
 		HAL_UART_Receive(&huart1, (uint8_t*)&usuario, sizeof(usuario), 1000);
-		BSP_LCD_DisplayStringAtLine(4,(uint8_t*)&usuario.config);
+		sprintf((uint8_t)c.str,"%s",usuario.config);
+		BSP_LCD_DisplayStringAtLine(4,(uint8_t*)str);
 		
-		if(usuario.config == 'h')
+		if(usuario.config[0] == 'h')
 		{
-			usuario.config = 0;
+			usuario.config[0] = 0;
 
 			configura_hora();
 		}
-    else if(usuario.config == 'l')
+    else if(usuario.config[0] == 'l')
     {
-      usuario.config = 0;
+      usuario.config[0] = 0;
 			
 			le_cartao();
 
 			HAL_UART_Transmit(&huart1, (uint8_t*)&usuario, sizeof(form), 5000);
     }
-    else if(usuario.config == 'c')
+    else if(usuario.config[0] == 'c')
     {
-      usuario.config = 0;
+      usuario.config[0] = 0;
 
       escreve_cartao();
-
-      BSP_LCD_DisplayStringAtLine(13,(uint8_t*)"Usuario Cadastrado # pode ter dado ruim");
     }
-    else if(usuario.config == 'o')
+    else if(usuario.config[0] == 'o')
     {
-      usuario.config = 0;
+      usuario.config[0] = 0;
 
       grava_entrando();
 
       BSP_LCD_DisplayStringAtLine(16,(uint8_t*)"Entrada Liberada");
     }
-    else if(c.config == 'u')
+    else if(usuario.config[0] == 'u')
     {
-      usuario.config = 0;
+      usuario.config[0] = 0;
 
       grava_saindo();
 
       BSP_LCD_DisplayStringAtLine(16,(uint8_t*)"Saida Liberada");
     }
-    else if(c.config == 'a')
+    else if(usuario.config[0] == 'a')
     {
-      usuario.config = 0;
+      usuario.config [0]= 0;
 
       inicializa_cartao();
 			

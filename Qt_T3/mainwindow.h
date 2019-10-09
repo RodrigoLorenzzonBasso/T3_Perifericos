@@ -46,6 +46,7 @@ private:
     void showUserInForms();
     void showPopUp();
     void readForms();
+    void eraseForms();
 };
 
 #endif // MAINWINDOW_H
