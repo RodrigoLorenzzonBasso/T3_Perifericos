@@ -35,9 +35,6 @@ private:
     QSerialPort *serial;
 
     void serialConnect();
-    void transmitSystemHour();
-    void sendCommand(char com);
-    bool readUser();
     bool writeUser();
     void showUserInForms();
     void showPopUp();

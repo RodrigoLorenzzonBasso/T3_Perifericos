@@ -225,8 +225,7 @@ int main(void)
 			{
 				endereco = i;
 				HAL_I2C_Mem_Write(&hi2c3,0xa0,endereco,I2C_MEMADD_SIZE_8BIT,&dado[i],1,500);
-				HAL_Delay(10);
-				
+				HAL_Delay(10);		
 			}
 
       if(c.entrandoSaindo == 1)
@@ -236,11 +235,9 @@ int main(void)
       }
       else if(c.entrandoSaindo == 2)
       {
-        // escreve saida liberada
         BSP_LCD_DisplayStringAtLine(10,(uint8_t*)"Saida Liberada");
         c.entrandoSaindo = -1;
       }
-
 			c.escreve = 0;
     }
 		

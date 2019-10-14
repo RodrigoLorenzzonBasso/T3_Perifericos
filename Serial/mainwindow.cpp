@@ -7,7 +7,6 @@
 
 QTimer *timer = new QTimer(); //cria novo timer
 bool cadastrando = false;
-bool atualCadastrado = false;
 
 typedef struct
 {
@@ -139,7 +138,6 @@ void MainWindow::showUserInForms()
     ui->data_saida->setText(usuario.data_saida);
     ui->hora_entrada->setText(usuario.hora_entrada);
     ui->data_entrada->setText(usuario.data_entrada);
-
 }
 
 void MainWindow::showPopUp()
@@ -161,7 +159,6 @@ void MainWindow::showPopUp()
     {
         qDebug() << "nao no cadastrar, nada acontece";
     }
-
 }
 
 void MainWindow::eraseForms()
