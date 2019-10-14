@@ -3,13 +3,9 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
-#include <QThread>
 #include <QDebug>
 #include <QTime>
 #include <QDate>
-
-#include <string.h>
-
 
 namespace Ui {
 class MainWindow;
@@ -24,8 +20,8 @@ public:
     ~MainWindow();
 
 private slots:
-
     void readData();
+    void timer_teste();
 
     void on_BotaoConecta_clicked();
     void on_botaoLeDados_clicked();
@@ -33,11 +29,10 @@ private slots:
     void on_botaoCadastra_clicked();
     void on_botaoAtiva_clicked();
 
+
 private:
     Ui::MainWindow *ui;
     QSerialPort *serial;
-
-    bool cadastrando;
 
     void serialConnect();
     void transmitSystemHour();
