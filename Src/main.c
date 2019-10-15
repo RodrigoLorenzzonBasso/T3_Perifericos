@@ -183,10 +183,10 @@ int main(void)
 	HAL_RTC_SetDate(&hrtc, &c.sDate, FORMAT_BIN);
 	HAL_RTC_SetTime(&hrtc, &c.sTime, FORMAT_BIN);
 
-  HAL_UART_Receive_IT(&huart1,(uint8_t *)&usuario,sizeof(estrutura));
+  HAL_UART_Receive_IT(&huart1,(uint8_t*)&usuario,sizeof(estrutura));
 
 
-  int testaCartao = 1;
+  int testaCartao = 0;
 
   if(testaCartao == 1)
   {
@@ -350,6 +350,10 @@ void configura_hora(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+	
+	sprintf((char*)c.str,"%c",usuario.config);
+	BSP_LCD_DisplayStringAtLine(10,c.str);
+	
   if(usuario.config == 'h')
   {
     usuario.config = 'x';
@@ -370,7 +374,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       strcpy(usuario.nome,temp.nome);
       strcpy(usuario.cargo,temp.cargo);
       strcpy(usuario.matricula,temp.matricula);
-      strcpy(usuario.cadastrado,temp.cadastrado);
+      usuario.cadastrado = temp.cadastrado;
       strcpy(usuario.hora_saida,temp.hora_saida);
       strcpy(usuario.data_saida,temp.data_saida);
       c.entrandoSaindo = 1;
@@ -382,7 +386,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       strcpy(usuario.nome,temp.nome);
       strcpy(usuario.cargo,temp.cargo);
       strcpy(usuario.matricula,temp.matricula);
-      strcpy(usuario.cadastrado,temp.cadastrado);
+      usuario.cadastrado = temp.cadastrado;
       strcpy(usuario.hora_entrada,temp.hora_entrada);
       strcpy(usuario.data_entrada,temp.data_entrada);
       c.entrandoSaindo = 2;

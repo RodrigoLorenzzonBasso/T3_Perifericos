@@ -56,6 +56,14 @@ void MainWindow::readData()
         if(usuario.cadastrado == 'c')
         {
             showUserInForms();
+
+            QString file = "C:\\Users\\17103308\\Desktop\\T3_Perifericos\\Serial\\Fotos\\" + QString::fromLocal8Bit(usuario.nome)+".jpg";
+            QPixmap pixelMap = QPixmap(QString(file));
+
+            QPixmap resized = pixelMap.scaled(131,131);
+
+            ui->img->setPixmap(resized);
+
         }
         else
         {
@@ -72,8 +80,8 @@ bool MainWindow::writeUser()
 
 void MainWindow::serialConnect()
 {
-    serial->setPortName("COM11");
-    serial->setBaudRate(9600);
+    serial->setPortName("COM9");
+    serial->setBaudRate(115200);
     serial->setDataBits(static_cast<QSerialPort::DataBits>(8));
     serial->setParity(static_cast<QSerialPort::Parity>(0));
     serial->setStopBits(static_cast<QSerialPort::StopBits>(1));
@@ -100,7 +108,11 @@ void MainWindow::on_BotaoConecta_clicked()
     sprintf(usuario.data_entrada,"%02d:%02d:%02d",date.day(),date.month(),date.year()%100);
 
     usuario.config = 'h';
-    writeUser();
+    //writeUser();
+
+    serial->write((char*)&usuario,sizeof(usuario));
+    serial->waitForBytesWritten(500);
+
 }
 
 void MainWindow::on_botaoLeDados_clicked()
