@@ -67,6 +67,8 @@ void MainWindow::readData()
         }
         else
         {
+            QPixmap nulo;
+            ui->img->setPixmap(nulo);
             showPopUp();
         }       
     }
@@ -80,7 +82,7 @@ bool MainWindow::writeUser()
 
 void MainWindow::serialConnect()
 {
-    serial->setPortName("COM9");
+    serial->setPortName("COM10");
     serial->setBaudRate(115200);
     serial->setDataBits(static_cast<QSerialPort::DataBits>(8));
     serial->setParity(static_cast<QSerialPort::Parity>(0));
@@ -223,6 +225,8 @@ void MainWindow::on_botaoApagaDados_clicked()
 
     writeUser();
     eraseForms();
+    QPixmap nulo;
+    ui->img->setPixmap(nulo);
 }
 
 void MainWindow::on_botaoAtiva_clicked()

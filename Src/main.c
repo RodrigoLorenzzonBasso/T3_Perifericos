@@ -352,7 +352,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	
 	sprintf((char*)c.str,"%c",usuario.config);
-	BSP_LCD_DisplayStringAtLine(10,c.str);
+	BSP_LCD_DisplayStringAtLine(6,c.str);
 	
   if(usuario.config == 'h')
   {
